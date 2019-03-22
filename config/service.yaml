@@ -1,0 +1,35 @@
+server:
+  type: simple
+  applicationContextPath: /scigraph
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 9000
+
+logging:
+  level: INFO
+
+graphConfiguration:
+  neo4jConfig:
+     dbms.transaction.timeout: 5m
+  location: ../../../store/graph
+  indexedNodeProperties:
+    - category
+    - label
+    - fragment
+  exactNodeProperties:
+    - label
+    - synonym
+
+serviceMetadata:
+  name: 'Reconciliation Service'
+  identifierSpace: 'http://example.org'
+  schemaSpace: 'http://example.org'
+  view: {
+    url: 'http://localhost:9000/scigraph/refine/view/{{id}}'
+  }
+  preview: {
+    url: 'http://localhost:9000/scigraph/refine/preview/{{id}}',
+    width: 400,
+    height: 400
+  }

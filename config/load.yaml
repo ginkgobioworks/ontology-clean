@@ -1,0 +1,62 @@
+graphConfiguration:
+    location: ../../../store/graph
+    indexedNodeProperties:
+      - category
+      - label
+      - fragment
+    exactNodeProperties:
+      - label
+      - synonym
+    curies:
+      'rdfs' : 'http://www.w3.org/2000/01/rdf-schema#'
+
+    # Set Neo4j configuration options
+    neo4jConfig:
+      dump_configuration : true
+      dbms.pagecache.memory : 1G
+
+# The number of threads dedicated to reading ontologies
+producerThreadCount: 2
+
+# The number of threads dedicated to processing ontology axioms
+consumerThreadCount: 2
+
+ontologies:
+  - url: ../../../store/inputs/so.owl
+  - url: ../../../store/inputs/bao_complete.owl
+
+# Categories are used for vocabulary term filtering and are inherited to
+# subclasses of their parent. They are also added as node labels for
+# convenience.
+# Note that previously defined curies can be used instead of IRIs.
+categories:
+    http://purl.obolibrary.org/obo/ncbitaxon_1 : organism
+    http://purl.obolibrary.org/obo/obi_0100026 : organism
+    http://purl.obolibrary.org/obo/doid_4 : disease
+    http://purl.obolibrary.org/obo/uberon_0001062 : anatomical entity
+    http://purl.obolibrary.org/obo/chebi_23367 : molecular entity
+    http://purl.obolibrary.org/obo/go_0005623 : cell
+    http://purl.obolibrary.org/obo/go_0008150 : biological process
+    http://purl.obolibrary.org/obo/go_0005575 : subcellular entity
+    http://purl.obolibrary.org/obo/pato_0000001 : quality
+
+# All properties are stored but can optionally be added to a new node property.
+# Note that previously defined curies can be used instead of IRIs.
+mappedProperties:
+  - name: label # The name of the new property
+    properties: # The list of properties mapped to the new property
+    - rdfs:label
+    - http://www.w3.org/2004/02/skos/core#prefLabel
+  - name: comment
+    properties:
+    - rdfs:comment
+  - name: synonym
+    properties:
+    - http://www.geneontology.org/formats/oboInOwl#hasExactSynonym
+    - http://www.geneontology.org/formats/oboInOwl#hasNarrowSynonym
+    - http://www.geneontology.org/formats/oboInOwl#hasBroadSynonym
+    - http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym
+    - http://purl.obolibrary.org/obo/go#systematic_synonym
+  - name: definition
+    properties:
+    - http://purl.obolibrary.org/obo/IAO_0000115
