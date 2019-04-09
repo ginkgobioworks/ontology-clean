@@ -1,2 +1,6 @@
 store/
 tools/
+external/
+build/
+dist/
+*.egg-info
