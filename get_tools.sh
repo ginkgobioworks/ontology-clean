@@ -3,10 +3,9 @@ set -eu -o pipefail
 
 mkdir -p tools
 cd tools
-#git clone https://github.com/SciGraph/SciGraph
+git clone https://github.com/SciGraph/SciGraph
 cd SciGraph
-#mvn -DskipTests -DskipITs install
-
+mvn -DskipTests -DskipITs install
 cd ..
 wget https://github.com/OpenRefine/OpenRefine/releases/download/3.2-beta/openrefine-linux-3.2-beta.tar.gz
 tar -xzvpf openrefine*.tar.gz

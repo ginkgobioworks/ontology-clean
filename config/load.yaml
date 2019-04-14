@@ -23,6 +23,7 @@ consumerThreadCount: 2
 
 ontologies:
   - url: ../../../store/inputs/so.owl
+  - url: ../../../store/inputs/obi.owl
   - url: ../../../store/inputs/bao_complete.owl
 
 # Categories are used for vocabulary term filtering and are inherited to

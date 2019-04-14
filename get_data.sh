@@ -6,3 +6,4 @@ mkdir -p store/graph
 cd store/inputs
 wget https://github.com/The-Sequence-Ontology/SO-Ontologies/raw/master/so.owl
 wget http://www.bioassayontology.org/bao/bao_complete.owl
+wget http://purl.obolibrary.org/obo/obi.owl
