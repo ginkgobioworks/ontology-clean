@@ -19,7 +19,7 @@ def _read_rules(rule_file):
     with open(rule_file) as in_handle:
         return _clean_dict(edn_format.loads(in_handle.read()))["rules"]
 
-def _find_rule_matches(w, rules, scigraph):
+def _find_rule_matches(w, rules, scigraph, vals):
     """Find any rules matching from a word.
     """
     avs = []
@@ -32,10 +32,43 @@ def _find_rule_matches(w, rules, scigraph):
                 term = get_term_by_search(r["search"], scigraph)
             else:
                 term = get_term_by_id(r["ontology"], scigraph)
-            avs.append((term, "VAL"))
+            term = _add_value_type(term, r, vals)
+            for val in vals:
+                avs.append((term, _convert_val(val, term["value_type"])))
             for k, v in m.groupdict().items():
-                avs.append((_find_rule_matches(k, rules, scigraph)[0][0], v))
+                avs.extend(_find_rule_matches(k, rules, scigraph, [v]))
     return avs
+
+def _convert_val(val, value_type):
+    if val in ["VAL", None]:
+        return val
+    if value_type == "long":
+        return int(val)
+    elif value_type == "float":
+        return float(val)
+    else:
+        return val
+
+def _add_value_type(term, rule, vals):
+    """Add value type from definition, or guessing based on value.
+    """
+    if "type" in rule:
+        val_type = rule["type"]
+    else:
+        for val in vals:
+            try:
+                int(val)
+                val_type = "long"
+                break
+            except ValueError:
+                try:
+                    float(val)
+                    val_type = "float"
+                    break
+                except ValueError:
+                    val_type = "string"
+    term["value_type"] = val_type
+    return term
 
 def _remove_dups(avs):
     seen = set([])
@@ -47,20 +80,24 @@ def _remove_dups(avs):
             out.append((key, val))
     return out
 
+def _clean_attribute(attr):
+    attr["term"] = attr["term"].replace(" ", "-")
+    return attr
+
 def rule_mapper(rule_file, params):
     """Provide function to map terms to ontologies and values given input rules.
     """
     rules = _read_rules(rule_file)
-
+    default_val = "VAL"
     def _from_token(token):
         avs = []
         for w in token.words:
-            avs.extend(_find_rule_matches(w, rules, params["scigraph"]))
+            avs.extend(_find_rule_matches(w, rules, params["scigraph"], [default_val]))
         for attr in ["units", "normalization"]:
             xs = getattr(token, attr)
             if xs:
-                cura = _find_rule_matches(attr, rules, params["scigraph"])[0][0]
-                avs += [(cura, x) for x in xs]
+                avs.extend(_find_rule_matches(attr, rules, params["scigraph"], xs))
+        avs = [(_clean_attribute(a), v) for a, v in avs]
         return avs
 
     return _from_token
