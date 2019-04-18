@@ -1,5 +1,6 @@
 """Map terms to ontology groupings using pre-defined regular expression based rules.
 """
+import pprint
 import urllib.parse
 import re
 
@@ -40,7 +41,7 @@ def _find_rule_matches(w, rules, scigraph, vals):
     return avs
 
 def _convert_val(val, value_type):
-    if val in ["VAL", None]:
+    if val in [None]:
         return val
     if value_type == "long":
         return int(val)
@@ -56,17 +57,20 @@ def _add_value_type(term, rule, vals):
         val_type = rule["type"]
     else:
         for val in vals:
-            try:
-                int(val)
-                val_type = "long"
-                break
-            except ValueError:
+            if val is None:
+                val_type = "string"
+            else:
                 try:
-                    float(val)
-                    val_type = "float"
+                    int(val)
+                    val_type = "long"
                     break
                 except ValueError:
-                    val_type = "string"
+                    try:
+                        float(val)
+                        val_type = "float"
+                        break
+                    except ValueError:
+                        val_type = "string"
     term["value_type"] = val_type
     return term
 
@@ -88,11 +92,15 @@ def rule_mapper(rule_file, params):
     """Provide function to map terms to ontologies and values given input rules.
     """
     rules = _read_rules(rule_file)
-    default_val = "VAL"
-    def _from_token(token):
+    def _from_token(token, val):
         avs = []
         for w in token.words:
-            avs.extend(_find_rule_matches(w, rules, params["scigraph"], [default_val]))
+            avs.extend(_find_rule_matches(w, rules, params["scigraph"], [val]))
+        if len(avs) == 0:
+            avs.extend(_find_rule_matches(" ".join([w for w in token.words]),
+                                          rules, params["scigraph"], [val]))
+        if len(avs) == 0:
+            raise NotImplementedError("Missing ontology mapping for:\n%s" % str(token))
         for attr in ["units", "normalization"]:
             xs = getattr(token, attr)
             if xs:
@@ -109,10 +117,20 @@ def get_term_by_search(search, base_url):
     """
     search_id = urllib.parse.quote('"%s"' % (search), safe="")
     url = f"{base_url}/vocabulary/search/{search_id}"
-    for term in requests.get(url).json():
-        if term["labels"][0].find(search) >= 0:
-            return {"term": term["labels"][0], "iri": term["iri"],
-                    "definition": term["definitions"][0]}
+    results = requests.get(url).json()
+    if not (isinstance(results, dict) and results.get("code") == 404):
+        for term in results:
+            if term["labels"][0].find(search) >= 0:
+                return {"term": term["labels"][0], "iri": term["iri"],
+                        "doc": _get_doc(term)}
+    raise ValueError("Did not find ontology term for search '%s'\n%s" %
+                     (search, pprint.pformat(results)))
+
+def _get_doc(term):
+    out = term["iri"]
+    if term.get("definitions"):
+        out += ": %s" % (term["definitions"][0])
+    return out
 
 def get_term_by_id(iri, base_url):
     """Retrieve ontology term details by an ontology identifier.
@@ -123,4 +141,4 @@ def get_term_by_id(iri, base_url):
     url = f"{base_url}/vocabulary/id/{search_id}"
     term = requests.get(url).json()
     return {"term": term["labels"][0], "iri": term["iri"],
-            "definition": term["definitions"][0]}
+            "doc": _get_doc(term)}

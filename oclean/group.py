@@ -13,18 +13,25 @@ import sklearn.cluster
 import pint
 
 
-def cluster_keys(in_keys, params):
+def cluster_keys(in_kvs, params):
+    """Take a set of input key/value pairs and normalize and cluster into groups.
+    """
     tokenizer = RegexpTokenizer(r'[\w/=]+')
     tokens = []
-    for in_key in in_keys:
-        tokens.append(tokenizer.tokenize(params["cleaner"](in_key.strip().lower())))
-    tokens = [_add_normalization(add_units(t), params["norm_map"]) for t in tokens]
+    ivals = {}
+    # Provide index mapping keys to values for retrieval
+    for i, (in_key, in_val) in enumerate(in_kvs):
+        ivals[i] = in_val
+        tokens.append((i, tokenizer.tokenize(params["cleaner"](in_key.strip().lower()))))
+    tokens = [_add_normalization(i, add_units(t), params["norm_map"]) for (i, t) in tokens]
+    assert len(tokens) == len(in_kvs)
     cluster_indexes = distance_clustering([x.words for x in tokens], params["kmer"])
     # words = [["_".join(x.words)] for x in tokens]
     # word2vec_kmeans(words)
     clusters = collections.defaultdict(list)
+    # Re-associated values after key organization
     for i, t in enumerate(tokens):
-        clusters[cluster_indexes[i]].append(t)
+        clusters[cluster_indexes[i]].append((t, ivals[t.valindex]))
     return clusters
 
 def _word_to_kmers(w, kmer_size):
@@ -102,10 +109,10 @@ def distance_clustering(words, kmer_size):
             cluster_i += 1
     return word_to_cluster
 
-def _add_normalization(token, norm_map):
+def _add_normalization(valindex, token, norm_map):
     """Flag words used to describe normalization inputs.
     """
-    AnnToken = collections.namedtuple("AnnToken", "words,units,normalization")
+    AnnToken = collections.namedtuple("AnnToken", "words,units,normalization,valindex")
     cur_words = []
     cur_norms = []
     for w in token.words:
@@ -113,7 +120,7 @@ def _add_normalization(token, norm_map):
             cur_norms.append(w)
         else:
             cur_words.append(w)
-    return AnnToken(cur_words, token.units, cur_norms)
+    return AnnToken(cur_words, token.units, cur_norms,valindex)
 
 def add_units(tokens):
     """Separate specifications into descriptions of process and units.

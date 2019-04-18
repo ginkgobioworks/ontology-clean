@@ -11,14 +11,15 @@ def main(in_file, rules):
     params = {"cleaner": key_clean_common, "kmer": 5,
               "norm_map": {"raw": "raw"},
               "scigraph": "http://localhost:9000/scigraph"}
+    # Use temporary value for testing with sets of input keys
+    default_key = None
     with open(in_file) as in_handle:
-        in_keys = [l.strip() for l in in_handle]
-    clusters = oclean.group.cluster_keys(in_keys, params)
+        in_kvs = [(l.strip(), default_key) for l in in_handle]
+    clusters = oclean.group.cluster_keys(in_kvs, params)
     mapper = oclean.ontology.rule_mapper(rules, params)
     for cid in sorted(clusters.keys()):
-        # print("-", clusters[cid])
-        for token in clusters[cid]:
-            oclean.tuples.flatten_to_ontology(token, mapper)
+        for token, val in clusters[cid]:
+            oclean.tuples.flatten_to_ontology(token, val, mapper)
 
 def key_clean_common(k):
     """Provide transformations for common conventions used inconsistently in key names.

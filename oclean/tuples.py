@@ -11,11 +11,11 @@ import pprint
 import edn_format
 from edn_format import Keyword as K
 
-def flatten_to_ontology(token, mapper):
+def flatten_to_ontology(token, val, mapper):
     """Given a token, flatten into a series of key/value pairs and an ontology.
     """
     print("-", token)
-    cur_o = mapper(token)
+    cur_o = mapper(token, val)
     if cur_o:
         _ontology_to_edn(cur_o)
     else:
