@@ -10,6 +10,7 @@ import requests
 def _read_rules(rule_file):
     def _clean_key(k):
         return k.name if isinstance(k, edn_format.Keyword) else k
+
     def _clean_dict(xs):
         if isinstance(xs, (dict, edn_format.immutable_dict.ImmutableDict)):
             return {_clean_key(k): _clean_dict(v) for k, v in xs.items()}
@@ -92,6 +93,7 @@ def rule_mapper(rule_file, params):
     """Provide function to map terms to ontologies and values given input rules.
     """
     rules = _read_rules(rule_file)
+
     def _from_token(token, val):
         avs = []
         for w in token.words:

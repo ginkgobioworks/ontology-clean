@@ -120,7 +120,7 @@ def _add_normalization(valindex, token, norm_map):
             cur_norms.append(w)
         else:
             cur_words.append(w)
-    return AnnToken(cur_words, token.units, cur_norms,valindex)
+    return AnnToken(cur_words, token.units, cur_norms, valindex)
 
 def add_units(tokens):
     """Separate specifications into descriptions of process and units.
@@ -145,7 +145,7 @@ def add_units(tokens):
 
 def word_modeling(tokens):
     from gensim.corpora import Dictionary
-    from gensim.models import phrases, LdaModel, Word2Vec
+    from gensim.models import phrases, LdaModel
 
     bigram = phrases.Phraser(phrases.Phrases(tokens, min_count=2))
     for i, ts in enumerate(tokens):
@@ -189,4 +189,3 @@ def word2vec_kmeans(words):
         wclusters[assigned_clusters[i]].append(word)
     for c in sorted(list(wclusters.keys())):
         print(c, wclusters[c])
-
