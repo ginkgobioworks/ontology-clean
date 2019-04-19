@@ -21,7 +21,7 @@ def _read_rules(rule_file):
     with open(rule_file) as in_handle:
         return _clean_dict(edn_format.loads(in_handle.read()))["rules"]
 
-def _find_rule_matches(w, rules, scigraph, vals):
+def _find_rule_matches(w, rules, scigraph, vals, cur_ns=None):
     """Find any rules matching from a word.
     """
     avs = []
@@ -37,9 +37,36 @@ def _find_rule_matches(w, rules, scigraph, vals):
             term = _add_value_type(term, r, vals)
             for val in vals:
                 avs.append((term, _convert_val(val, term["value_type"])))
+            if cur_ns or "ns" in r:
+                avs = [(_add_namespace(a, cur_ns or r["ns"]), v) for a, v in avs]
+            if not cur_ns:
+                cur_ns = _get_cur_namespace(avs)
+                avs = [(_add_namespace(a, cur_ns), v) for a, v in avs]
             for k, v in m.groupdict().items():
-                avs.extend(_find_rule_matches(k, rules, scigraph, [v]))
+                avs.extend(_find_rule_matches(k, rules, scigraph, [v], cur_ns))
     return avs
+
+def _get_cur_namespace(avs):
+    """Get a current namespace, either existing or default.
+    """
+    cur_term = avs[0][0]["term"].split("/")
+    if len(cur_term) == 1:
+        return avs[0][0]["term"]
+    else:
+        assert len(cur_term) == 2, pprint.pformat(avs)
+        return cur_term[0]
+
+def _add_namespace(attr, ns):
+    """Add a namespace to a attribute, if not already namespaced.
+
+    Allows grouping of terms by name.
+    """
+    cur_term = attr["term"].split("/")
+    if len(cur_term) == 1:
+        attr["term"] = "%s/%s" % (ns, attr["term"])
+    else:
+        assert len(cur_term) == 2, (attr)
+    return attr
 
 def _convert_val(val, value_type):
     if val in [None]:
@@ -106,7 +133,8 @@ def rule_mapper(rule_file, params):
         for attr in ["units", "normalization"]:
             xs = getattr(token, attr)
             if xs:
-                avs.extend(_find_rule_matches(attr, rules, params["scigraph"], xs))
+                avs.extend(_find_rule_matches(attr, rules, params["scigraph"], xs,
+                                              _get_cur_namespace(avs)))
         avs = [(_clean_attribute(a), v) for a, v in avs]
         return avs
 
