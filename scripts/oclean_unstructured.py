@@ -17,9 +17,11 @@ def main(in_file, rules):
         in_kvs = [(l.strip(), default_key) for l in in_handle]
     clusters = oclean.group.cluster_keys(in_kvs, params)
     mapper = oclean.ontology.rule_mapper(rules, params)
+    token_vals = []
     for cid in sorted(clusters.keys()):
         for token, val in clusters[cid]:
-            oclean.tuples.flatten_to_ontology(token, val, mapper)
+            token_vals.append((token, val))
+    oclean.tuples.flatten_to_ontology(token_vals, mapper)
 
 def key_clean_common(k):
     """Provide transformations for common conventions used inconsistently in key names.

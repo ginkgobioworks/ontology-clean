@@ -6,29 +6,30 @@ external data, along mapping to ontologies.
 Uses externally written business rules for how to map word names into
 ontologies.
 """
+import collections
 import pprint
 
 import edn_format
 from edn_format import Keyword as K
 
-def flatten_to_ontology(token, val, mapper):
+def flatten_to_ontology(token_vals, mapper):
     """Given a token, flatten into a series of key/value pairs and an ontology.
     """
-    print("-", token)
-    cur_o = mapper(token, val)
-    if cur_o:
+    ns_groups = collections.defaultdict(list)
+    for token, val in token_vals:
+        for okey, val in mapper(token, val):
+            ns = okey["term"].split("/")[0]
+            ns_groups[ns].append((okey, val))
+    for ns, cur_o in ns_groups.items():
         _ontology_to_edn(cur_o)
-    else:
-        raise NotImplementedError("Missing ontology mapping for:\n%s" % str(token))
 
 def _ontology_to_edn(cur_o):
     """Map an ontology specification to datomic schemas and inputs.
     """
-    ns = cur_o[0][0]["term"]
     schema = []
     vals = []
     for okey, val in cur_o:
-        cur_id = K("%s/%s" % (ns, okey["term"]))
+        cur_id = K(okey["term"])
         schema.append({"ident": cur_id,
                        "valueType": K("db.type/%s" % okey["value_type"]),
                        "cardinality": K("db.cardinality/one"),
