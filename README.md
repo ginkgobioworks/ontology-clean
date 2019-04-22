@@ -3,42 +3,40 @@
 In progress work to use NLP and [SciGraph](https://github.com/SciGraph/SciGraph)
 for mapping unstructured metadata key value pairs to ontologies.
 
-### Setup
-
-Install data and tools:
-```
-bash get_data.sh
-bash get_tools.sh
-```
-Load ontologies and run SciGraph server:
-```
-bash run_load.sh
-bash run_service.sh
-```
-
 ### Specify input key values
 
-Contextual information nested in the keys:
+With free text non-ontology keys, users can represent information in multiple
+ways. For instance, a key can have contextual information on the experiment
+nested within the keys:
 ```
-ex485em528_raw
+ex485em528_raw,0.95
+```
+Or multiple keys representing the same information, with users needing to infer
+grouping based on their knowledge of the experiment:
+```
+Emission: ideal (nanometer),528
+Excitation: ideal (nanometer),485
+Value,0.95
+Timepoint (second),10
 ```
 
-Multiple grouped keys:
-```
-Emission: ideal (nanometer)
-Excitation: ideal (nanometer)
-Value
-Timepoint (second)
-```
+### Specify rules for mapping keys to ontologies
 
-### Specify rules for mapping to ontologies
-
+To map keys to ontologies, specify a set of rules which define the inputs
+and ontology terms. The input is `pat`, a regular expression that matches
+to the existing key/value pair. The regular expression can include references
+to other patterns to help retrieve embedded information in a key. To map to
+ontologies, either specify a search term which SciGraph uses to retrieve
+the ontology or a specific ontology reference. You can also specify a type
+where it is difficult to infer from the input values themselves. The first
+key value example above maps with these rules:
 ```
 {:pat "^ex(?P<excitation>\d{3})em(?P<emission>\d{3})$" :search "fluorescence intensity" :type "float"}
 {:pat "excitation" :ontology "BAO_0000566"}
 {:pat "emission" :ontology "BAO_0000567"}
 ```
-
+For the second multi-key example, group together separate keys using a 
+shared namespace, with the `ns` tag:
 ```
 {:pat "excitation" :ontology "BAO_0000566" :ns "fluorescence"}
 {:pat "emission" :ontology "BAO_0000567" :ns "fluorescence"}
@@ -52,6 +50,23 @@ Timepoint (second)
   and results
 - [Sequence Ontology (SO)](http://www.sequenceontology.org/) -- description of
   sequence features in annotations
+- The [Ontology for Biomedical Investigations (OBI)](http://purl.obolibrary.org/obo/obi)
+
+## Usage
+
+### Setup
+
+Install data and tools:
+```
+bash get_data.sh
+bash get_tools.sh
+```
+Load ontologies and run SciGraph server:
+```
+bash run_load.sh
+bash run_service.sh
+```
+
 
 ### Ideas to do
 
