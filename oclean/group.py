@@ -26,6 +26,8 @@ def cluster_keys(in_kvs, params):
     tokens = [_add_normalization(i, add_units(t), params["norm_map"]) for (i, t) in tokens]
     assert len(tokens) == len(in_kvs)
     cluster_indexes = distance_clustering([x.words for x in tokens], params["kmer"])
+    if not cluster_indexes:
+        cluster_indexes = collections.defaultdict(lambda: 0)
     # words = [["_".join(x.words)] for x in tokens]
     # word2vec_kmeans(words)
     clusters = collections.defaultdict(list)

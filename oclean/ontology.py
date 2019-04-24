@@ -7,19 +7,22 @@ import re
 import edn_format
 import requests
 
-def _read_rules(rule_file):
+def edn_loads_clean(x):
     def _clean_key(k):
         return k.name if isinstance(k, edn_format.Keyword) else k
 
     def _clean_dict(xs):
         if isinstance(xs, (dict, edn_format.immutable_dict.ImmutableDict)):
             return {_clean_key(k): _clean_dict(v) for k, v in xs.items()}
-        if isinstance(xs, (list, tuple)):
+        elif isinstance(xs, (list, tuple, edn_format.immutable_list.ImmutableList)):
             return [_clean_dict(x) for x in xs]
         else:
-            return xs
+            return _clean_key(xs)
+    return _clean_dict(edn_format.loads(x))
+
+def _read_rules(rule_file):
     with open(rule_file) as in_handle:
-        return _clean_dict(edn_format.loads(in_handle.read()))["rules"]
+        return edn_loads_clean(in_handle.read())["rules"]
 
 def _find_rule_matches(w, rules, scigraph, vals, cur_ns=None):
     """Find any rules matching from a word.

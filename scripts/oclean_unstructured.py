@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Mapping unstructured keys into ontologies with grouped entity, attribute, values.
 """
+import pprint
 import sys
 
 import oclean.group
@@ -21,7 +22,9 @@ def main(in_file, rules):
     for cid in sorted(clusters.keys()):
         for token, val in clusters[cid]:
             token_vals.append((token, val))
-    oclean.tuples.flatten_to_ontology(token_vals, mapper)
+    for o_edn, kv_edn in oclean.tuples.flatten_to_ontology(token_vals, mapper):
+        pprint.pprint(o_edn)
+        pprint.pprint(kv_edn)
 
 def key_clean_common(k):
     """Provide transformations for common conventions used inconsistently in key names.
