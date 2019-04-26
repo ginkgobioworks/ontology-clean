@@ -93,22 +93,23 @@ def distance_clustering(words, kmer_size):
           - Broad clustering of things with matching larger k-mers and digits
           - Split clusters with in groups without larger k-mer matches.
     """
-    word_to_origi = collections.defaultdict(list)
-    for i, w in enumerate(words):
-        word_to_origi[tuple(w)].append(i)
-    words = np.asarray(words)
-    similarity = -1 * np.array([[term_distance(w1, w2, kmer_size) for w1 in words] for w2 in words])
-    affprop = sklearn.cluster.AffinityPropagation(affinity="precomputed", damping=0.5)
-    affprop.fit(similarity)
     word_to_cluster = {}
-    cluster_i = 0
-    for cluster_id in np.unique(affprop.labels_):
-        orig_cluster = np.unique(words[np.nonzero(affprop.labels_ == cluster_id)])
-        for cluster in _split_cluster(orig_cluster, kmer_size):
-            for w in cluster:
-                for origi in word_to_origi[tuple(w)]:
-                    word_to_cluster[origi] = cluster_i
-            cluster_i += 1
+    if len(words) > 2:
+        word_to_origi = collections.defaultdict(list)
+        for i, w in enumerate(words):
+            word_to_origi[tuple(w)].append(i)
+        words = np.asarray(words)
+        similarity = -1 * np.array([[term_distance(w1, w2, kmer_size) for w1 in words] for w2 in words])
+        affprop = sklearn.cluster.AffinityPropagation(affinity="precomputed", damping=0.5)
+        affprop.fit(similarity)
+        cluster_i = 0
+        for cluster_id in np.unique(affprop.labels_):
+            orig_cluster = np.unique(words[np.nonzero(affprop.labels_ == cluster_id)])
+            for cluster in _split_cluster(orig_cluster, kmer_size):
+                for w in cluster:
+                    for origi in word_to_origi[tuple(w)]:
+                        word_to_cluster[origi] = cluster_i
+                cluster_i += 1
     return word_to_cluster
 
 def _add_normalization(valindex, token, norm_map):

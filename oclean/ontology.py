@@ -32,7 +32,7 @@ def _find_rule_matches(w, rules, scigraph, vals, cur_ns=None):
         m = re.search(r["pat"], w)
         if m:
             if "custom" in r:
-                term = {"term": r["custom"]}
+                term = {"term": r["custom"], "doc": r.get("doc") or r["custom"]}
             elif "search" in r:
                 term = get_term_by_search(r["search"], scigraph)
             else:
