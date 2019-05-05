@@ -1,5 +1,6 @@
 """Map terms to ontology groupings using pre-defined regular expression based rules.
 """
+import functools
 import pprint
 import urllib.parse
 import re
@@ -24,7 +25,7 @@ def _read_rules(rule_file):
     with open(rule_file) as in_handle:
         return edn_loads_clean(in_handle.read())["rules"]
 
-def _find_rule_matches(w, rules, scigraph, vals, cur_ns=None):
+def _find_rule_matches(w, rules, scigraph, lookup_db, vals, cur_ns=None):
     """Find any rules matching from a word.
     """
     avs = []
@@ -34,9 +35,10 @@ def _find_rule_matches(w, rules, scigraph, vals, cur_ns=None):
             if "custom" in r:
                 term = {"term": r["custom"], "doc": r.get("doc") or r["custom"]}
             elif "search" in r:
-                term = get_term_by_search(r["search"], scigraph)
+                term = get_term_by_search(r["search"], scigraph, lookup_db)
             else:
-                term = get_term_by_id(r["ontology"], scigraph)
+                assert "ontology" in r, r
+                term = get_term_by_id(r["ontology"], scigraph, lookup_db)
             term = _add_value_type(term, r, vals)
             for val in vals:
                 avs.append((term, _convert_val(val, term["value_type"])))
@@ -46,7 +48,7 @@ def _find_rule_matches(w, rules, scigraph, vals, cur_ns=None):
                 cur_ns = _get_cur_namespace(avs)
                 avs = [(_add_namespace(a, cur_ns), v) for a, v in avs]
             for k, v in m.groupdict().items():
-                avs.extend(_find_rule_matches(k, rules, scigraph, [v], cur_ns))
+                avs.extend(_find_rule_matches(k, rules, scigraph, lookup_db, [v], cur_ns))
     return avs
 
 def _get_cur_namespace(avs):
@@ -127,16 +129,16 @@ def rule_mapper(rule_file, params):
     def _from_token(token, val):
         avs = []
         for w in token.words:
-            avs.extend(_find_rule_matches(w, rules, params["scigraph"], [val]))
+            avs.extend(_find_rule_matches(w, rules, params["scigraph"], params.get("lookup_db"), [val]))
         if len(avs) == 0:
             avs.extend(_find_rule_matches(" ".join([w for w in token.words]),
-                                          rules, params["scigraph"], [val]))
+                                          rules, params["scigraph"], params.get("lookup_db"), [val]))
         if len(avs) == 0:
             raise NotImplementedError("Missing ontology mapping for:\n%s" % str(token))
         for attr in ["units", "normalization"]:
             xs = getattr(token, attr)
             if xs:
-                avs.extend(_find_rule_matches(attr, rules, params["scigraph"], xs,
+                avs.extend(_find_rule_matches(attr, rules, params["scigraph"], params.get("lookup_db"), xs,
                                               _get_cur_namespace(avs)))
         avs = [(_clean_attribute(a), v) for a, v in avs]
         return avs
@@ -145,6 +147,19 @@ def rule_mapper(rule_file, params):
 
 # ## SciGraph support
 
+def cache_ontology_search(f):
+    @functools.wraps(f)
+    def wrapper(search, scigraph, lookup_db):
+        if lookup_db is not None and search in lookup_db:
+            return lookup_db[search]
+        else:
+            result = f(search, scigraph)
+            if lookup_db is not None:
+                lookup_db[search] = result
+            return result
+    return wrapper
+
+@cache_ontology_search
 def get_term_by_search(search, base_url):
     """Retrieve an ontology term by search.
     """
@@ -165,6 +180,7 @@ def _get_doc(term):
         out += ": %s" % (term["definitions"][0])
     return out
 
+@cache_ontology_search
 def get_term_by_id(iri, base_url):
     """Retrieve ontology term details by an ontology identifier.
     """

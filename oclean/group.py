@@ -16,7 +16,7 @@ import pint
 def cluster_keys(in_kvs, params):
     """Take a set of input key/value pairs and normalize and cluster into groups.
     """
-    tokenizer = RegexpTokenizer(r'[\w/=]+')
+    tokenizer = RegexpTokenizer(r'[\w/=-]+')
     tokens = []
     ivals = {}
     # Provide index mapping keys to values for retrieval
