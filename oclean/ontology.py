@@ -1,6 +1,7 @@
 """Map terms to ontology groupings using pre-defined regular expression based rules.
 """
 import functools
+import os
 import pprint
 import urllib.parse
 import re
@@ -32,14 +33,7 @@ def _find_rule_matches(w, rules, scigraph, lookup_db, vals, cur_ns=None):
     for r in rules:
         m = re.search(r["pat"], w)
         if m:
-            if "custom" in r:
-                term = {"term": r["custom"], "doc": r.get("doc") or r["custom"]}
-            elif "search" in r:
-                term = get_term_by_search(r["search"], scigraph, lookup_db)
-            else:
-                assert "ontology" in r, r
-                term = get_term_by_id(r["ontology"], scigraph, lookup_db)
-            term = _add_value_type(term, r, vals)
+            term = _term_from_rule(r, scigraph, lookup_db, vals)
             for val in vals:
                 avs.append((term, _convert_val(val, term["value_type"])))
             if cur_ns or "ns" in r:
@@ -50,6 +44,19 @@ def _find_rule_matches(w, rules, scigraph, lookup_db, vals, cur_ns=None):
             for k, v in m.groupdict().items():
                 avs.extend(_find_rule_matches(k, rules, scigraph, lookup_db, [v], cur_ns))
     return avs
+
+def _term_from_rule(r, scigraph, lookup_db, vals=None):
+    if not vals:
+        vals = []
+    if "custom" in r:
+        term = {"term": r["custom"], "doc": r.get("doc") or r["custom"]}
+    elif "search" in r:
+        term = get_term_by_search(r["search"], scigraph, lookup_db)
+    else:
+        assert "ontology" in r, r
+        term = get_term_by_id(r["ontology"], scigraph, lookup_db)
+    term = _add_value_type(term, r, vals)
+    return term
 
 def _get_cur_namespace(avs):
     """Get a current namespace, either existing or default.
@@ -86,6 +93,7 @@ def _convert_val(val, value_type):
 def _add_value_type(term, rule, vals):
     """Add value type from definition, or guessing based on value.
     """
+    val_type = None
     if "type" in rule:
         val_type = rule["type"]
     else:
@@ -104,7 +112,8 @@ def _add_value_type(term, rule, vals):
                         break
                     except ValueError:
                         val_type = "string"
-    term["value_type"] = val_type
+    if val_type:
+        term["value_type"] = val_type
     return term
 
 def _remove_dups(avs):
@@ -144,6 +153,25 @@ def rule_mapper(rule_file, params):
         return avs
 
     return _from_token
+
+def expand_rules(rule_file, params):
+    """Expand rules with ontology lookups to avoid need for SciGraph during runs.
+    """
+    rules = _read_rules(rule_file)
+    out_rules = []
+    for r in rules:
+        term = _term_from_rule(r, params["scigraph"], params.get("lookup_db"))
+        term["term"] = term["term"].replace(" ", "-")
+        term["pat"] = r["pat"]
+        if r.get("ns"):
+            term["ns"] = r["ns"]
+        out_rules.append(term)
+    out_file = "%s-finalized.edn" % os.path.splitext(rule_file)[0]
+    with open(out_file, "w") as out_handle:
+        out_handle.write("{:rules\n[\n")
+        for r in out_rules:
+            out_handle.write(edn_format.dumps(r, keyword_keys=True, sort_keys=True) + "\n")
+        out_handle.write("]}")
 
 # ## SciGraph support
 
