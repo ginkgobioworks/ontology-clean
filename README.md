@@ -46,11 +46,24 @@ shared namespace, with the `ns` tag:
 
 ### Input ontologies
 
-- [BioAssay Ontology (BAO)](http://bioassayontology.org/) -- screening assays
-  and results
+We ideally use [OBO Foundry](http://www.obofoundry.org/) ontologies:
+
 - [Sequence Ontology (SO)](http://www.sequenceontology.org/) -- description of
   sequence features in annotations
+- [Systems Biology Ontology (SBO)](http://www.ebi.ac.uk/sbo/main/)
+- [BioAssay Ontology (BAO)](http://bioassayontology.org/) -- screening assays
+  and results, not OBO but slimmer than NCIT
 - The [Ontology for Biomedical Investigations (OBI)](http://purl.obolibrary.org/obo/obi)
+- [Chemical Entities of Biological Interest ChEBI](http://www.ebi.ac.uk/chebi)
+
+Other useful supplementary ontologies:
+
+- [NCI Thesaurus (NCIT)](https://github.com/NCI-Thesaurus/thesaurus-obo-edition)
+- [Semanticscience Integrated Ontology (SIO)](https://github.com/MaastrichtU-IDS/semanticscience)
+
+Useful tools:
+
+- [EBI Ontology Lookup Service (OLS)](https://www.ebi.ac.uk/ols/index)
 
 ## Usage
 
