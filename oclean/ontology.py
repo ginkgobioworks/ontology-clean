@@ -51,10 +51,12 @@ def _term_from_rule(r, scigraph, lookup_db, vals=None):
     if "custom" in r:
         term = {"term": r["custom"], "doc": r.get("doc") or r["custom"]}
     elif "search" in r:
-        term = get_term_by_search(r["search"], scigraph, lookup_db)
-    else:
+        term = get_term_by_search(r["search"], r, scigraph, lookup_db)
+    elif "ontology" in r and r.get("ontology"):
         assert "ontology" in r, r
-        term = get_term_by_id(r["ontology"], scigraph, lookup_db)
+        term = get_term_by_id(r["ontology"], r, scigraph, lookup_db)
+    else:
+        term = {"term": r["pat"], "doc": r.get("doc") or r["pat"]}
     term = _add_value_type(term, r, vals)
     return term
 
@@ -172,23 +174,24 @@ def expand_rules(rule_file, params):
         for r in out_rules:
             out_handle.write(edn_format.dumps(r, keyword_keys=True, sort_keys=True) + "\n")
         out_handle.write("]}")
+    return out_rules
 
 # ## SciGraph support
 
 def cache_ontology_search(f):
     @functools.wraps(f)
-    def wrapper(search, scigraph, lookup_db):
+    def wrapper(search, r, scigraph, lookup_db):
         if lookup_db is not None and search in lookup_db:
             return lookup_db[search]
         else:
-            result = f(search, scigraph)
+            result = f(search, r, scigraph)
             if lookup_db is not None:
                 lookup_db[search] = result
             return result
     return wrapper
 
 @cache_ontology_search
-def get_term_by_search(search, base_url):
+def get_term_by_search(search, _, base_url):
     """Retrieve an ontology term by search.
     """
     search_id = urllib.parse.quote('"%s"' % (search), safe="")
@@ -203,19 +206,34 @@ def get_term_by_search(search, base_url):
                      (search, pprint.pformat(results)))
 
 def _get_doc(term):
-    out = term["iri"]
+    out = ""
     if term.get("definitions"):
-        out += ": %s" % (term["definitions"][0])
+        out += "%s" % (term["definitions"][0])
+    if out:
+        out += " "
+    out += term["iri"]
     return out
 
 @cache_ontology_search
-def get_term_by_id(iri, base_url):
+def get_term_by_id(iri, r, base_url):
     """Retrieve ontology term details by an ontology identifier.
     """
     id_prefixes = {"obi": "http://purl.obolibrary.org/obo/",
+                   "ncit": "http://purl.obolibrary.org/obo/",
+                   "sbo": "http://biomodels.net/SBO/",
+                   "chebi": "http://purl.obolibrary.org/obo/",
                    "bao": "http://www.bioassayontology.org/bao#"}
-    search_id = urllib.parse.quote("%s%s" % (id_prefixes[iri.split("_")[0].lower()], iri), safe="")
-    url = f"{base_url}/vocabulary/id/{search_id}"
-    term = requests.get(url).json()
+    cur_prefix = iri.split("_")[0].lower()
+    search_id = urllib.parse.quote("%s%s" % (id_prefixes[cur_prefix], iri), safe="")
+    # NCIT too large to load into SciGraph
+    if cur_prefix == "ncit":
+        term = {"iri": "%s%s" % (id_prefixes[cur_prefix], iri), "labels": [r.get("pat")]}
+        if r.get("doc"):
+            term["definitions"] = [r["doc"]]
+    else:
+        url = f"{base_url}/vocabulary/id/{search_id}"
+        term = requests.get(url).json()
+        if r.get("doc"):
+            term["definitions"] = [r["doc"]]
     return {"term": term["labels"][0], "iri": term["iri"],
             "doc": _get_doc(term)}
