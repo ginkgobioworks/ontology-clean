@@ -23,10 +23,11 @@ consumerThreadCount: 2
 
 ontologies:
   - url: ../../../store/inputs/so.owl
-  - url: ../../../store/inputs/chebi.owl
+    # - url: ../../../store/inputs/chebi.owl
   - url: ../../../store/inputs/obi.owl
   - url: ../../../store/inputs/bao_complete.owl
   - url: ../../../store/inputs/sbo.owl
+  - url: ../../../store/inputs/stato.owl
 
 # Categories are used for vocabulary term filtering and are inherited to
 # subclasses of their parent. They are also added as node labels for

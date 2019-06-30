@@ -10,3 +10,5 @@ cd store/inputs
 [ -f "chebi.owl" ] || wget -O - http://purl.obolibrary.org/obo/chebi.owl.gz | gunzip -c > chebi.owl
 [ -f "ncit.owl" ] || wget http://purl.obolibrary.org/obo/ncit.owl
 [ -f "sbo.owl" ] || wget http://purl.obolibrary.org/obo/sbo.owl
+[ -f "rhea-biopax.owl" ] || wget -O - ftp://ftp.expasy.org/databases/rhea/biopax/rhea-biopax.owl.gz | gunzip -c > rhea-biopax.owl
+[-f "stato.owl"] || wget http://purl.obolibrary.org/obo/stato.owl

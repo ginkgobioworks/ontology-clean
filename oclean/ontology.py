@@ -221,6 +221,8 @@ def get_term_by_id(iri, r, base_url):
     id_prefixes = {"obi": "http://purl.obolibrary.org/obo/",
                    "ncit": "http://purl.obolibrary.org/obo/",
                    "sbo": "http://biomodels.net/SBO/",
+                   "go": "http://purl.obolibrary.org/obo/",
+                   "stato": "http://purl.obolibrary.org/obo/",
                    "chebi": "http://purl.obolibrary.org/obo/",
                    "bao": "http://www.bioassayontology.org/bao#"}
     cur_prefix = iri.split("_")[0].lower()

@@ -54,6 +54,7 @@ We ideally use [OBO Foundry](http://www.obofoundry.org/) ontologies:
 - [BioAssay Ontology (BAO)](http://bioassayontology.org/) -- screening assays
   and results, not OBO but slimmer than NCIT
 - The [Ontology for Biomedical Investigations (OBI)](http://purl.obolibrary.org/obo/obi)
+- [Statistical Methods Ontology (STATO)](http://stato-ontology.org/)
 - [Chemical Entities of Biological Interest ChEBI](http://www.ebi.ac.uk/chebi)
 
 Other useful supplementary ontologies:
