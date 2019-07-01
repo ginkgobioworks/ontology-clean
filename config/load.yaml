@@ -28,6 +28,7 @@ ontologies:
   - url: ../../../store/inputs/bao_complete.owl
   - url: ../../../store/inputs/sbo.owl
   - url: ../../../store/inputs/stato.owl
+  - url: ../../../store/inputs/msio.owl
 
 # Categories are used for vocabulary term filtering and are inherited to
 # subclasses of their parent. They are also added as node labels for

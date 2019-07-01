@@ -55,7 +55,8 @@ We ideally use [OBO Foundry](http://www.obofoundry.org/) ontologies:
   and results, not OBO but slimmer than NCIT
 - The [Ontology for Biomedical Investigations (OBI)](http://purl.obolibrary.org/obo/obi)
 - [Statistical Methods Ontology (STATO)](http://stato-ontology.org/)
-- [Chemical Entities of Biological Interest ChEBI](http://www.ebi.ac.uk/chebi)
+- [Chemical Entities of Biological Interest (ChEBI)](http://www.ebi.ac.uk/chebi)
+- [Metabalomics Standards Initiative Ontology (MSIO)](https://github.com/MSI-Metabolomics-Standards-Initiative/MSIO)
 
 Other useful supplementary ontologies:
 
