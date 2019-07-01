@@ -52,12 +52,14 @@ def _term_from_rule(r, scigraph, lookup_db, vals=None):
         term = {"term": r["custom"], "doc": r.get("doc") or r["custom"]}
     elif "search" in r:
         term = get_term_by_search(r["search"], r, scigraph, lookup_db)
+        term["term"] = term["term"].replace(" ", "-")
     elif "ontology" in r and r.get("ontology"):
         assert "ontology" in r, r
         term = get_term_by_id(r["ontology"], r, scigraph, lookup_db)
+        term["term"] = term["term"].replace(" ", "-")
     else:
         term = {"term": r["pat"], "doc": r.get("doc") or r["pat"]}
-    term = _add_value_type(term, r, vals)
+    term = add_value_type(term, r, vals)
     return term
 
 def _get_cur_namespace(avs):
@@ -92,7 +94,7 @@ def _convert_val(val, value_type):
     else:
         return val
 
-def _add_value_type(term, rule, vals):
+def add_value_type(term, rule, vals):
     """Add value type from definition, or guessing based on value.
     """
     val_type = None
@@ -163,8 +165,9 @@ def expand_rules(rule_file, params):
     out_rules = []
     for r in rules:
         term = _term_from_rule(r, params["scigraph"], params.get("lookup_db"))
-        term["term"] = term["term"].replace(" ", "-")
         term["pat"] = r["pat"]
+        if term["pat"] == term["term"]:
+            term["pat"] = "^%s$" % term["pat"]
         if r.get("ns"):
             term["ns"] = r["ns"]
         out_rules.append(term)
@@ -222,6 +225,7 @@ def get_term_by_id(iri, r, base_url):
                    "ncit": "http://purl.obolibrary.org/obo/",
                    "sbo": "http://biomodels.net/SBO/",
                    "go": "http://purl.obolibrary.org/obo/",
+                   "iao": "http://purl.obolibrary.org/obo/",
                    "stato": "http://purl.obolibrary.org/obo/",
                    "msio": "http://purl.obolibrary.org/obo/",
                    "chebi": "http://purl.obolibrary.org/obo/",
