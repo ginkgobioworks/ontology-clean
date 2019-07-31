@@ -23,13 +23,13 @@ def main(in_file, rules):
         params["lookup_db"] = lookup_db
         clusters = oclean.group.cluster_keys(in_kvs, params)
         mapper = oclean.ontology.rule_mapper(rules, params)
-    token_vals = []
-    for cid in sorted(clusters.keys()):
-        for token, val in clusters[cid]:
-            token_vals.append((token, val))
-    for o_edn, kv_edn in oclean.tuples.flatten_to_ontology(token_vals, mapper):
-        pprint.pprint(o_edn)
-        pprint.pprint(kv_edn)
+        token_vals = []
+        for cid in sorted(clusters.keys()):
+            for token, val in clusters[cid]:
+                token_vals.append((token, val))
+        for o_edn, kv_edn in oclean.tuples.flatten_to_ontology(token_vals, mapper):
+            pprint.pprint(o_edn)
+            pprint.pprint(kv_edn)
 
 def key_clean_common(k):
     """Provide transformations for common conventions used inconsistently in key names.

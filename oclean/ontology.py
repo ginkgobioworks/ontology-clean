@@ -31,6 +31,7 @@ def _find_rule_matches(w, rules, scigraph, lookup_db, vals, cur_ns=None):
     """
     avs = []
     for r in rules:
+        print(r["pat"])
         m = re.search(r["pat"], w)
         if m:
             term = _term_from_rule(r, scigraph, lookup_db, vals)
@@ -165,11 +166,12 @@ def expand_rules(rule_file, params):
     out_rules = []
     for r in rules:
         term = _term_from_rule(r, params["scigraph"], params.get("lookup_db"))
-        term["pat"] = r["pat"]
+        term["pat"] = r["pat"].replace("?P<", "?<")
         if term["pat"] == term["term"]:
             term["pat"] = "^%s$" % term["pat"]
-        if r.get("ns"):
-            term["ns"] = r["ns"]
+        for inherit in ["ns", "units-in-val", "common-key", "chemical"]:
+            if r.get(inherit):
+                term[inherit] = r[inherit]
         out_rules.append(term)
     out_file = "%s-finalized.edn" % os.path.splitext(rule_file)[0]
     with open(out_file, "w") as out_handle:
@@ -182,9 +184,10 @@ def expand_rules(rule_file, params):
 # ## SciGraph support
 
 def cache_ontology_search(f):
+    skip_cache = set([])
     @functools.wraps(f)
     def wrapper(search, r, scigraph, lookup_db):
-        if lookup_db is not None and search in lookup_db:
+        if lookup_db is not None and search in lookup_db and search not in skip_cache:
             return lookup_db[search]
         else:
             result = f(search, r, scigraph)
@@ -242,5 +245,6 @@ def get_term_by_id(iri, r, base_url):
         term = requests.get(url).json()
         if r.get("doc"):
             term["definitions"] = [r["doc"]]
+    print(iri, term)
     return {"term": term["labels"][0], "iri": term["iri"],
             "doc": _get_doc(term)}
