@@ -8,17 +8,18 @@ representing the more subtle question of why is more difficult. This post explor
 aspect of this, how to succinctly represent control samples for an experiment.
 
 Accurately capturing metadata about experiments and samples is a challenge many
-research efforts face. Analyses need to take into account replicates, batching
-and baseline controls and ladders used for normalization. Because these
-relationships can be complex, the often get specified in custom ways as part of
-the analysis process and thus are poorly structured and hard to retrospectively
-analyze or build automated tools around.
+research efforts face. Analyses need to take into account replicates and batching
+alongside baseline controls and ladders used for normalization. Because these
+relationships can be complex, they often get specified in custom ways as part of
+the analysis process and require additional structure to retrospectively
+analyze and build automated tools around.
 
-Here we'll describe ontologies for representing analysis controls and an initial
-approach to using them. Structured representation of experimental design enables
-data sharing and large scale analyses across multiple experiments. We welcome
-feedback on the representation, and would appreciate collaborations and pointers
-to how other communities represent controls in standard ways.
+Here we'll describe existing ontologies for representing analysis controls and
+an initial approach to using them. Structured representation of experimental
+design enables data sharing and large scale analyses across multiple
+experiments. We welcome feedback on the representation, and would appreciate
+collaborations and pointers to how other communities represent controls in
+standard ways.
 
 ## Ontology choices
 
@@ -26,10 +27,11 @@ To enable interoperability and standardization, we're using community efforts ar
 naming and representation on ontologies.
 [The Open Biological and Biomedical Ontology (OBO) Foundry](http://www.obofoundry.org/)
 coordinates a large number of interoperable ontology development efforts. In our
-space, we need to bring in multiple ontologies and OBO efforts coordinate and
-re-use terms between multiple ontology development efforts to create a cohesive
+space, we need to bring in multiple ontologies and the OBO
+re-uses terms between multiple ontology development efforts to create a cohesive
 whole. We also hope to interoperate with [Synthetic Biology Open Language (SBOL)](http://sbolstandard.org/)
-development efforts, especially around establishing [SBOL Experiment context](https://github.com/SynBioDex/SEPs/blob/master/sep_024.md), and make ontology choices overlapping with their efforts.
+development efforts, especially around establishing [SBOL Experiment context](https://github.com/SynBioDex/SEPs/blob/master/sep_024.md), 
+and make ontology choices overlapping with their efforts.
 
 To find and explore ontology terms, the [EMBL-EBI Ontology Lookup Service](https://www.ebi.ac.uk/ols/index)
 is a fantastic resource that enables both searching and browsing ontologies. We
@@ -56,28 +58,29 @@ control definition by assigning a
 which contains 3 different components:
 
 - [assay-control](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0000072)
-  -- A controlled vocabulary of terms grouping controls by the purpose. We'd
+  -- A controlled vocabulary of terms grouping controls by purpose. We'd
   like to consistently refer to things like positive and negative controls and
   currently subdivide into these categories:
-  [`positive`, `negative`, `ladder`, `blank`, `spike-in`, `calibration`, `wild-type`]
+  [`positive`, `negative`, `ladder`, `blank`, `calibration`, `wild-type`]
 
 - `assay-control-context` -- Controls require specific experimental context to
   establish how to interpret them. We didn't find a specific ontology term to
-  represent this, so are curious how others name and establish this type of
-  context. They fall roughly into a couple of categories:
+  represent this (hence the `assay-control` plus `context` extension), so are
+  curious how others name and establish this type of context. They fall roughly
+  into a couple of categories:
 
   - Expected detection amounts relative to other controls: [`very-high`, `high`,
     `medium-high`, `medium`, `medium-low`, `low`, `very-low`, `none`] 
   - Defining interpretation of the control: [`growth`, `expression`, `absorbance`, `background`]
 
 - [contained-entity](https://www.ebi.ac.uk/ols/ontologies/sbo/terms?iri=http%3A%2F%2Fbiomodels.net%2FSBO%2FSBO_0000664)
-  -- Finally, controls are often linked to specific chemicals, either widely
+  -- Finally, controls are often linked to specific chemicals: either widely
   used markers like GFP or products specific to an assay. We link these to a
   central database of chemicals to maintain consistent naming.
 
-Our goal was to provide constrained lists of choices covering the wide variety
-of work we do, which retaining enough flexibility to define exactly what the
-goal and use of a control is. To have restricted lists of choices, this required
+Our goal is to provide constrained lists of choices covering the wide variety
+of work we do, while retaining enough flexibility to define exactly what the
+goal and use of a control is. To maintain restricted lists of choices, this required
 breaking into 3 components and sourcing the options for those choices.
 We'll continue to iterate on this as we model more experiments. For readers, how 
 do these categories and choices reflect your experiences defining controls?
