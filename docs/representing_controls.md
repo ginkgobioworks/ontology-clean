@@ -61,7 +61,14 @@ which contains 3 different components:
   -- A controlled vocabulary of terms grouping controls by purpose. We'd
   like to consistently refer to things like positive and negative controls and
   currently subdivide into these categories:
-  [`positive`, `negative`, `ladder`, `blank`, `calibration`, `wild-type`]
+   - `positive
+   - `negative`
+   - `blank`
+   - `ladder` -- Multi-step ladder used to place outputs within a range of expected
+     outcomes
+   - `standard` -- Analytical standard to help measure responses relative to
+     known amounts of a input
+   - `spike-in` -- Quality control for ensuring correct expected responses
 
 - `assay-control-context` -- Controls require specific experimental context to
   establish how to interpret them. We didn't find a specific ontology term to
@@ -71,6 +78,7 @@ which contains 3 different components:
 
   - Expected detection amounts relative to other controls: [`very-high`, `high`,
     `medium-high`, `medium`, `medium-low`, `low`, `very-low`, `none`] 
+  - Identifying the control as derived from the original starting sample: [`parent`]
   - Defining interpretation of the control: [`growth`, `expression`, `absorbance`, `background`]
 
 - [contained-entity](https://www.ebi.ac.uk/ols/ontologies/sbo/terms?iri=http%3A%2F%2Fbiomodels.net%2FSBO%2FSBO_0000664)
