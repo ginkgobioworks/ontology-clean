@@ -9,7 +9,7 @@ aspect of this, how to succinctly represent control samples for an experiment.
 
 Accurately capturing metadata about experiments and samples is a challenge many
 research efforts face. Analyses need to take into account replicates and batching
-alongside baseline controls and ladders used for normalization. Because these
+alongside baseline controls and standards used for normalization. Because these
 relationships can be complex, they often get specified in custom ways as part of
 the analysis process and require additional structure to retrospectively
 analyze and build automated tools around.
@@ -61,7 +61,8 @@ which contains 3 different components:
   -- A controlled vocabulary of terms grouping controls by purpose. We'd
   like to consistently refer to things like positive and negative controls and
   currently subdivide into these categories:
-   - `positive
+
+   - `positive`
    - `negative`
    - `blank`
    - `ladder` -- Multi-step ladder used to place outputs within a range of expected
