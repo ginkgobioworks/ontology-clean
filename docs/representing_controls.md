@@ -65,11 +65,13 @@ which contains 3 different components:
    - `positive`
    - `negative`
    - `blank`
-   - `ladder` -- Multi-step ladder used to place outputs within a range of expected
-     outcomes
-   - `standard` -- Analytical standard to help measure responses relative to
-     known amounts of a input
-   - `spike-in` -- Quality control for ensuring correct expected responses
+   - `ladder` -- Two or more engineered strains of known performance that
+     control for variations in process conditions
+   - `standard` -- Two or more samples of an analytical standard of known
+     concentration from which we generate a curve for converting instrument
+     response into units of the standard
+   - `spike-in` -- A sample of known composition added to the plate during the
+     assay process to control for assay quality and handling errors
 
 - `assay-control-context` -- Controls require specific experimental context to
   establish how to interpret them. We didn't find a specific ontology term to
@@ -79,7 +81,7 @@ which contains 3 different components:
 
   - Expected detection amounts relative to other controls: [`very-high`, `high`,
     `medium-high`, `medium`, `medium-low`, `low`, `very-low`, `none`] 
-  - Identifying the control as derived from the original starting sample: [`parent`]
+  - Identifying the control as derived from the original starting strain: [`parent`]
   - Defining interpretation of the control: [`growth`, `expression`, `absorbance`, `background`]
 
 - [contained-entity](https://www.ebi.ac.uk/ols/ontologies/sbo/terms?iri=http%3A%2F%2Fbiomodels.net%2FSBO%2FSBO_0000664)
