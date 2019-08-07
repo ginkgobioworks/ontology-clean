@@ -9,21 +9,35 @@ analysis, we automatically aggregate all these measurements on the same original
 samples and need a way to distinguish them.
 
 To handle this, we provide labels on measurement steps to establish the context
-and aid in interpretation. These mirror the steps in an analysis workflow:
+and aid in interpretation. To establish unique labels we have three levels of
+classification to define, all of which live in the
+[intent-label](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FIAO_0000009)
+namespace:
 
-- pellet
-- glycerol
-- induced
-- preculture
-- culture
-- production
-- aliquot
-- dilution
-- reaction -- A terminal reaction plate, often containing multiple assay
-  specific measurements.
+- `label` -- Baseline label defining the step in an analysis workflow
+  - cryostock -- Glycerol or other baseline stock plate
+  - preculture
+  - culture
+  - production
+  - reaction -- A terminal reaction plate, often containing multiple assay
+    specific measurements
+  - pellet --  (TODO: Should remove?)
+  - induced -- (TODO: Should remove?)
+  - replicate -- A duplicate of an identically labeled measurement
+  - redo -- Distinguish a new measurement replacing a previous with the same
+    label
+  - root -- Define as the root sample for aggregating analysis results
 
-Additional labels identify specific plate relationships:
+- `label-context` -- A second level relationship connected with the label,
+  defining a sub-step (TODO: Better name? `label-substep`?)
+  - aliquot
+  - dilution
 
-- replicate -- A duplicate of an identically labeled measurement.
-- redo -- Distinguish a new measurement replacing a previous with the same
-  label.
+- `label-index` -- A number uniquifying multiple plates at the same step in the
+  process.
+
+The unique name for an `intent-label` is the combination of the 3 fields.
+`label-context` and `label-index` are optional and not included in the unique
+name if not set. For example, measurements on a plate, or parent plate, with `label-intent`: 
+`label: production, label-context: aliquot, label-index: 2` would be uniquely named 
+`production aliquot 2` during downstream analysis steps.

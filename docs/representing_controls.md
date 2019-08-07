@@ -52,12 +52,10 @@ For practical top level structure, we group our descriptions of the experimental
 design under the
 [study-design](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0500000)
 term. This provides a place for controls and other stratifications like
-biological and technical replicates. Under `study-design` we subgroup the
-control definition by assigning a
-[reference-substance-role](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0000025)
-which contains 3 different components:
+biological and technical replicates. Under `study-design` the
+control definition has 2 different components:
 
-- [assay-control](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0000072)
+- [control](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0000072)
   -- A controlled vocabulary of terms grouping controls by purpose. We'd
   like to consistently refer to things like positive and negative controls and
   currently subdivide into these categories:
@@ -65,29 +63,22 @@ which contains 3 different components:
    - `positive`
    - `negative`
    - `blank`
-   - `ladder` -- Two or more engineered strains of known performance that
-     control for variations in process conditions
+   - `parent` -- Identifying the control as derived from the original starting strain
    - `standard` -- Two or more samples of an analytical standard of known
      concentration from which we generate a curve for converting instrument
      response into units of the standard
    - `spike-in` -- A sample of known composition added to the plate during the
      assay process to control for assay quality and handling errors
 
-- `assay-control-context` -- Controls require specific experimental context to
+- `control-context` -- Controls require specific experimental context to
   establish how to interpret them. We didn't find a specific ontology term to
-  represent this (hence the `assay-control` plus `context` extension), so are
+  represent this (hence the `control` plus `context` extension), so are
   curious how others name and establish this type of context. They fall roughly
   into a couple of categories:
 
   - Expected detection amounts relative to other controls: [`very-high`, `high`,
     `medium-high`, `medium`, `medium-low`, `low`, `very-low`, `none`] 
-  - Identifying the control as derived from the original starting strain: [`parent`]
-  - Defining interpretation of the control: [`growth`, `expression`, `absorbance`, `background`]
-
-- [contained-entity](https://www.ebi.ac.uk/ols/ontologies/sbo/terms?iri=http%3A%2F%2Fbiomodels.net%2FSBO%2FSBO_0000664)
-  -- Finally, controls are often linked to specific chemicals: either widely
-  used markers like GFP or products specific to an assay. We link these to a
-  central database of chemicals to maintain consistent naming.
+  - Defining interpretation of the control: [`growth`, `expression`, `background`, `activity`, `inhibition`]
 
 Our goal is to provide constrained lists of choices covering the wide variety
 of work we do, while retaining enough flexibility to define exactly what the
