@@ -1,6 +1,6 @@
-# Establishing experimental context with plate labels
+# Establishing experimental intent with plate labels
 
-When analyzing experimental data, we need ways to provide context on
+When analyzing experimental data, we need ways to provide intent on
 measurements. An experimental workflow consists of multiple steps, many of which
 may have similar measurements. For example, we often check for cell growth by
 measuring OD600 absorbance using a plate reader after each transfer step. This
@@ -8,7 +8,7 @@ allows us to identify growth issues and loss of clones at each step. During
 analysis, we automatically aggregate all these measurements on the same original
 samples and need a way to distinguish them.
 
-To handle this, we provide labels on measurement steps to establish the context
+To handle this, we provide labels on measurement steps to establish the intended context
 and aid in interpretation. To establish unique labels we have three levels of
 classification to define, all of which live in the
 [intent-label](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FIAO_0000009)
