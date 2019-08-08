@@ -21,23 +21,25 @@ namespace:
   - production
   - reaction -- A terminal reaction plate, often containing multiple assay
     specific measurements
-  - pellet --  (TODO: Should remove?)
-  - induced -- (TODO: Should remove?)
+  - pellet
+  - induced
   - replicate -- A duplicate of an identically labeled measurement
   - redo -- Distinguish a new measurement replacing a previous with the same
     label
   - root -- Define as the root sample for aggregating analysis results
 
-- `label-context` -- A second level relationship connected with the label,
-  defining a sub-step (TODO: Better name? `label-substep`?)
-  - aliquot
+- `label-substep` -- A second level relationship connected with the label,
+  defining a sub-step
+  - aliquot -- A terminal branch of a preceding sample with a label, on
+    which a measurement is being collected
+  - timecourse -- A set of timepoint samples from a previous labeled sample
   - dilution
 
 - `label-index` -- A number uniquifying multiple plates at the same step in the
   process.
 
 The unique name for an `intent-label` is the combination of the 3 fields.
-`label-context` and `label-index` are optional and not included in the unique
+`label-substep` and `label-index` are optional and not included in the unique
 name if not set. For example, measurements on a plate, or parent plate, with `label-intent`: 
-`label: production, label-context: aliquot, label-index: 2` would be uniquely named 
+`label: production, label-substep: aliquot, label-index: 2` would be uniquely named
 `production aliquot 2` during downstream analysis steps.
