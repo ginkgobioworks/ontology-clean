@@ -86,3 +86,46 @@ upload and specify these:
   in the data frame.
 - Provide a list of `selection-criteriion` with the corresponding `response`
   reference to the data frame columns.
+
+## Example
+
+Prepare a data table with calculations and `hit-selection`:
+
+| strain | root sample | myspecial Z-Score | raw activity | hit-selection |
+| --- | --- | --- | --- | --- | --- |
+| 123 | 15 | 0.8 | 5.6 | winner |
+| 124 | 28 | 0.0 | 0.2 | inactive |
+
+Define `selection-criteria`:
+```
+myspecial Z-Score > 0.7 z-score
+raw activity > 4.0 raw
+```
+which gets transformed into:
+```
+hts-assay-sample:
+  lims-reference:
+    root-sample: 15
+    strain: 123
+  response-endpoint:
+    hit-selection: winner
+    selection-criteria:
+      [{response: myspecial Z-Score, comparison: > threshold: 0.7, data-transformation: z-score},
+       {response: raw activity, comparison: > threshold: 4.0, data-transformation: raw}]
+    response-measure:
+      [{response: myspecial Z-score, measurement: 0.8}
+       {response: raw activity, measurement: 5.6}]
+
+hts-assay-sample:
+  lims-reference:
+    root-sample: 28
+    strain: 124
+  response-endpoint:
+    hit-selection: inactive
+    selection-criteria:
+      [{response: myspecial Z-Score, comparison: > threshold: 0.7, data-transformation: z-score},
+       {response: raw activity, comparison: > threshold: 4.0, data-transformation: raw}]
+    response-measure:
+      [{response: myspecial Z-score, measurement: 0.0}
+       {response: raw activity, measurement: 0.1}]
+```
