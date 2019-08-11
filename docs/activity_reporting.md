@@ -92,9 +92,9 @@ upload and specify these:
 Prepare a data table with calculations and `hit-selection`:
 
 | strain | root sample | myspecial Z-Score | raw activity | hit-selection |
-| --- | --- | --- | --- | --- | --- |
-| 123 | 15 | 0.8 | 5.6 | winner |
-| 124 | 28 | 0.0 | 0.2 | inactive |
+| ---    | ---         | ---               | ---          | ---           |
+| 123    | 15          | 0.8               | 5.6          | winner        |
+| 124    | 28          | 0.0               | 0.2          | inactive      |
 
 Define `selection-criteria`:
 ```
