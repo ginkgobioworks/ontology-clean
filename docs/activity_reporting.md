@@ -2,8 +2,8 @@
 
 The end point of most experimental analyses at
 [Ginkgo](https://www.ginkgobioworks.com/) is a ranked list of biological strains
-based on their performance during the assay. Strain design and the type of
-screens depend on the organism, pathway and end goal of the
+based on their performance during the assay. Strain design and the detail of a
+screen depend on the organism, pathway and end goal of the
 campaign. The custom nature of biological design makes it difficult to
 standardize the analyses, but we'd like to retrieve the results of the analysis
 in a standard way to facilitate large scale interpretation of results across
@@ -14,15 +14,12 @@ and [defined controls](https://github.com/ginkgobioworks/ontology-clean/blob/mas
 we need a structured way to represent the outputs. We attempt to capture three
 sets of information, grouped under the
 [response-endpoint](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0000181)
-namespace: the hit classification, how it was selected, and the normalized
-activity calculations going into this score.
+namespace: the hit classification, the logic for the selection, and the calculated
+activity measurements going into the selection.
 
 ## Assay hits
 
-To identify top strains from a experimental screen we mark selected hits and
-define the selection criteria:
-
-- [hit-selection](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000277) -- Mark a strain with a positive outcome from an experimental screen.
+- [hit-selection](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000277) -- Mark a strain with an outcome from an experimental screen, differentiating positive hits.
   - `winner` -- Top strains that move on to additional analyses or delivery
   - `active` -- Strains that appear to have activity for the measured function
     and are above the limit of detection. A larger group than the categorized
@@ -35,8 +32,8 @@ define the selection criteria:
 ## Logic for selecting hits
 
 - [selection-criterion](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0001755)
-  -- The logic behind classifying the strain with the hit category. This is one
-  logic function of one or more specifications of:
+  -- The logic behind classifying the strain with the hit category, 
+  one or more specifications of:
  
   - `response` -- A label for the normalized response measurement.
   - `comparison` -- `[=, !=, >, >=, <, <=, custom]`
@@ -55,7 +52,7 @@ define the selection criteria:
     - [fold-change](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000169)
       -- A relative change in activity based on experimental controls, based on more
       complicated criteria.
-    - [strictly standardized mean difference](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000135
+    - [strictly standardized mean difference](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000135)
       -- SSMD; standardized mean based on difference between multiple groups.
     - [background-correction](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0000666) -- Substraction of background based on control samples
     - `raw` -- non-normalized data
@@ -63,10 +60,10 @@ define the selection criteria:
 
 ## Reporting standardized activity measurements
 
-We also want to capture the analyzed and normalized activity measurement used in
-making the hit selection and do this using a list of `reponse-measure` groups,
-each of which captures the value of the activity response linked to a normalized
-value contributing to the `selection-criterion`
+We also want to capture the calculate activity measurement used in making the
+hit selection and do this using a list of `reponse-measure` groups, each of
+which captures the value of the activity response linked to a normalized value
+contributing to the `selection-criterion`
 
 - `response-measure`
   - `response` -- A label for the normalized response measurement, matching the
@@ -77,10 +74,9 @@ value contributing to the `selection-criterion`
 
 An important component is making entering this information easy to enter and
 upload from the typical analysis methods of choice: table-like objects from
-pandas in Jupyter, Excel or R analyses. The plan for a workflow to
-upload and specify these:
+pandas in Jupyter, Excel or R analyses:
 
-- Prepare an analyzed table with a column for `hit-selection` and columns for all of the
+- Prepare an output analysis table with a column for `hit-selection` and columns for all of the
   `response` values used in the `selection-criterion`. This will translate into
   the `hit-response` and `response-measure` for each aggregated sample and `reponse` column
   in the data frame.
