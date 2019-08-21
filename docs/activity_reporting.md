@@ -19,15 +19,17 @@ activity measurements going into the selection.
 
 ## Assay hits
 
-- [hit-selection](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000277) -- Mark a strain with an outcome from an experimental screen, differentiating positive hits.
-  - `winner` -- Top strains that move on to additional analyses or delivery
-  - `active` -- Strains that appear to have activity for the measured function
-    and are above the limit of detection. A larger group than the categorized
-    winners and useful when reusing or analyzing strains in different contexts.
-  - `low-confidence` -- Potentially good strain but without good confidence to
-    declare as another category.
-  - `inactive` -- An inactive strain based on the screen results (nicer than
-    calling strains losers)
+- [active](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPATO_0002354) Strains that appear to have activity for the measured function and are above the limit of detection. 
+  - `yes`
+  - `no`
+  - `maybe` -- Not enough confidence to declare as another category.
+
+- [hit-selection](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000277) -- Mark a strain with an outcome from an experimental screen.
+
+  - `advance` -- Top strains that move on to additional analyses or delivery
+  - `improved`
+  - `neutral`
+  - `deleterious`
 
 ## Logic for selecting hits
 
@@ -38,25 +40,42 @@ activity measurements going into the selection.
   - `response` -- A label for the normalized response measurement.
   - `comparison` -- `[=, !=, >, >=, <, <=, custom]`
   - `threshold` -- The cutoff value for classifying the response.
-  - [data-transformation](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0200166)
-    -- Method used to prepare the `response` value. Often this will not be a
-    direct measure of activity, but some proxy that is easier to assay at scale.
+  - [data-transformation](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0200166) -- Statistical methods used to prepare the `response` value, broken into 4 categories of normalization and transformation:
 
-    - [z-score](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000104)
-      -- Score after statistical normalization based on mean and standard deviations.
-    - [mad-score](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0002127)
-      -- Score after statistical normalization based on median and median absolute
-      deviations, which can be more resilient to outliers.
-    - [percent-response](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0000082)
-      -- Signal normalized to positive and negative controls.
-    - [fold-change](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000169)
-      -- A relative change in activity based on experimental controls, based on more
-      complicated criteria.
-    - [strictly standardized mean difference](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000135)
-      -- SSMD; standardized mean based on difference between multiple groups.
-    - [background-correction](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0000666) -- Substraction of background based on control samples
-    - `raw` -- non-normalized data
-    - `custom` -- Other non-categorized method.
+    - [background-correction](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0000666) -- Approach used for subtraction of background based on a reference
+       - standard-curve
+       - od-normalized
+       - bca-normalized
+       - total-protein
+       - `raw` -- non-normalized data
+       - custom
+
+    - [normalization-control](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0002750) -- Control or plate reference used for background correction and normalization
+       - positive
+       - standard
+       - spike-in
+       - plate-all
+       - plate-per-plate
+
+    - [normalization-method](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0200169) -- Statistical method applied to the `normalization-control`
+       - standard-deviation
+       - mean
+       - median
+
+    - [candidate-ranking](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000118) -- Statistical approach for ranking outcomes to determine candidates
+       - [z-score](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000104)
+         -- Score after statistical normalization based on mean and standard deviations.
+       - [mad-score](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0002127)
+         -- Score after statistical normalization based on median and median absolute
+         deviations, which can be more resilient to outliers.
+       - [percent-response](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0000082)
+         -- Signal normalized to positive and negative controls.
+       - [fold-change](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000169)
+         -- A relative change in activity based on experimental controls, based on more
+         complicated criteria.
+       - [strictly standardized mean difference](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000135)
+         -- SSMD; standardized mean based on difference between multiple groups.
+       - `custom` -- Other non-categorized method.
 
 ## Reporting standardized activity measurements
 
@@ -76,26 +95,37 @@ An important component is making entering this information easy to enter and
 upload from the typical analysis methods of choice: table-like objects from
 pandas in Jupyter, Excel or R analyses:
 
-- Prepare an output analysis table with a column for `hit-selection` and columns for all of the
+- Prepare an output analysis table with a column for `hit-selection`, `active` and columns for all of the
   `response` values used in the `selection-criterion`. This will translate into
   the `hit-response` and `response-measure` for each aggregated sample and `reponse` column
   in the data frame.
+- Prepare a data table mapping `response` columns to the statistical methods
+  used in `data-transformation`.
 - Provide a list of `selection-criteriion` with the corresponding `response`
   reference to the data frame columns.
 
 ## Example
 
-Prepare a data table with calculations and `hit-selection`:
+Prepare a data table with `response` calculated values, `active` and `hit-selection`
+linked to original samples in the experiment:
 
-| strain | root sample | myspecial Z-Score | raw activity | hit-selection |
-| ---    | ---         | ---               | ---          | ---           |
-| 123    | 15          | 0.8               | 5.6          | winner        |
-| 124    | 28          | 0.0               | 0.2          | inactive      |
+| strain | root sample | myspecial Z-Score | raw activity | active | hit-selection |
+| ---    | ---         | ---               | ---          | ---    | ---           |
+| 123    | 15          | 0.8               | 5.6          | yes    | advance       |
+| 124    | 28          | 0.0               | 0.2          | no     |               |
+
+Prepare a data table mapping `response` to statistical methods used in
+`data-transformation`:
+
+| response          | background-correction | normalization-control | normalization-method | candidate-ranking |
+| ---               | ---                   | ---                   | ---                  | ---               |
+| myspecial Z-score | standard-curve        | positive              | mean                 | z-score           |
+| raw activity      | raw                   |                       |                      |
 
 Define `selection-criteria`:
 ```
-myspecial Z-Score > 0.7 z-score
-raw activity > 4.0 raw
+myspecial Z-Score > 0.7
+raw activity > 4.0
 ```
 which gets transformed into:
 ```
@@ -104,10 +134,16 @@ hts-assay-sample:
     root-sample: 15
     strain: 123
   response-endpoint:
-    hit-selection: winner
+    hit-selection: advance
+    active: yes
     selection-criteria:
-      [{response: myspecial Z-Score, comparison: > threshold: 0.7, data-transformation: z-score},
-       {response: raw activity, comparison: > threshold: 4.0, data-transformation: raw}]
+      [{response: myspecial Z-Score, comparison: > threshold: 0.7,
+        data-tranformation: {background-correction: z-score,
+                             normalization-control: positive,
+                             normalization-method: mean,
+                             candidate-ranking: z-score}},
+       {response: raw activity, comparison: > threshold: 4.0, 
+        data-transformation: {background-correction: raw}}]
     response-measure:
       [{response: myspecial Z-score, measurement: 0.8}
        {response: raw activity, measurement: 5.6}]
@@ -117,10 +153,15 @@ hts-assay-sample:
     root-sample: 28
     strain: 124
   response-endpoint:
-    hit-selection: inactive
+    active: no
     selection-criteria:
-      [{response: myspecial Z-Score, comparison: > threshold: 0.7, data-transformation: z-score},
-       {response: raw activity, comparison: > threshold: 4.0, data-transformation: raw}]
+      [{response: myspecial Z-Score, comparison: > threshold: 0.7,
+        data-tranformation: {background-correction: z-score,
+                             normalization-control: positive,
+                             normalization-method: mean,
+                             candidate-ranking: z-score}},
+       {response: raw activity, comparison: > threshold: 4.0,
+        data-transformation: {background-correction: raw}}]
     response-measure:
       [{response: myspecial Z-score, measurement: 0.0}
        {response: raw activity, measurement: 0.1}]
