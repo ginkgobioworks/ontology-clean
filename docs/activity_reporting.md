@@ -2,8 +2,8 @@
 
 The end point of most experimental analyses at
 [Ginkgo](https://www.ginkgobioworks.com/) is a ranked list of biological strains
-based on their performance during the assay. Strain design and the detail of a
-screen depend on the organism, pathway and end goal of the
+based on their performance during assessment assays. Strain design and the
+details of an assay screen depend on the organism, pathway and end goal of the
 campaign. The custom nature of biological design makes it difficult to
 standardize the analyses, but we'd like to retrieve the results of the analysis
 in a standard way to facilitate large scale interpretation of results across
@@ -14,8 +14,8 @@ and [defined controls](https://github.com/ginkgobioworks/ontology-clean/blob/mas
 we need a structured way to represent the outputs. We attempt to capture three
 sets of information, grouped under the
 [response-endpoint](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0000181)
-namespace: the hit classification, the logic for the selection, and the calculated
-activity measurements going into the selection.
+namespace: the logic for data processing and hit selection, the final classifications, and the calculated
+activity measurements.
 
 ## Logic for selecting hits
 
@@ -44,7 +44,7 @@ activity measurements going into the selection.
        - spike-in
 
      - standard-curve -- Application of a standard curve to convert response values into measures of interest.
-        - Free text (`y = mx + b`) Specify y and x, for instance `[calc] = m[col] + b` where `col=abs600 calc=your-compound`
+        - Free text capturing the equation used in conversion: `y = mx + b`, specify y and x. For instance `[out] = m[col] + b` where `col=abs600 out=your-compound in ug/ml`
 
      - [normalization-transformation](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0200169) -- Define methods used to normalize data prior to standardization
         - Free text column name specifying the operation used for normalization (`BCA / OD`)
@@ -66,7 +66,7 @@ activity measurements going into the selection.
 
 ## Assay hits
 
-- [hit-selection](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000277) -- Mark a strain with an outcome from an experimental screen, categorizing two levels of 
+- [hit-selection](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000277) -- Mark a strain with an outcome from an experimental screen, categorizing at two levels:
 
   - [active](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPATO_0002354) Strains that appear to have activity for the measured function and are above the limit of detection. 
     - `yes`
@@ -79,8 +79,8 @@ activity measurements going into the selection.
 
 ## Reporting standardized activity measurements
 
-We also want to capture the calculate activity measurement used in making the
-hit selection and do this using a list of `reponse-measure` groups, each of
+We also want to capture the calculated activity measurement used in making the
+hit selection. These are lists of `reponse-measure` groups, each of
 which captures the value of the activity response linked to a normalized value
 contributing to the `selection-criterion`
 
@@ -100,9 +100,7 @@ pandas in Jupyter, Excel or R analyses:
   the `hit-response` and `response-measure` for each aggregated sample and `reponse` column
   in the data frame.
 - Prepare a data table mapping `response` columns to the statistical methods
-  used in `data-transformation`.
-- Provide a list of `selection-criteriion` with the corresponding `response`
-  reference to the data frame columns.
+  used in `data-transformation` and `selection-criterion`
 
 ## Example
 
