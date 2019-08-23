@@ -23,31 +23,33 @@ activity measurements going into the selection.
   -- The logic behind classifying a strain, one or more specifications of:
  
   - `response` -- A label for the normalized response measurement.
+  - [replicate-analysis](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0200057) -- Statistical method applied to the `response` for grouping replicates:
+     - mean
+     - median
+     - min
+     - max
+     - majority-rule -- An approach like 2 out of 3
+     - custom
   - `comparison` -- `[=, !=, >, >=, <, <=, custom]`
   - `threshold` -- The cutoff value for classifying the response.
-  - [data-transformation](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0200166) -- Statistical methods used to prepare the `response` value, broken into 4 categories of normalization and transformation:
 
-    - [normalization-control](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0002750) -- Control or plate reference used for background correction and normalization
+  - [data-transformation](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0200166) -- Capture approaches used to prepare the `response` value, broken into processing (background-correction, standard-curve, normalization-transformation) and standardization (standardize-score):
+
+     - [background-correction](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0000666) -- [Control specification](https://github.com/ginkgobioworks/ontology-clean/blob/master/docs/representing_controls.md#approaches-for-modeling-controls-and-requests-for-discussion) for background correction of raw data:
        - positive
+       - negative
+       - blank
+       - parent
        - standard
        - spike-in
-       - plate-all
-       - plate-per-plate
 
-    - [normalization-method](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0200169) -- Statistical method applied to the `normalization-control`
-       - standard-deviation
-       - mean
-       - median
-    
-    - [background-correction](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0000666) -- Approach used for subtraction of background based on a reference
-       - standard-curve
-       - od-normalized
-       - bca-normalized
-       - total-protein
-       - `raw` -- non-normalized data
-       - custom
+     - standard-curve -- Application of a standard curve to convert response values into measures of interest.
+        - Free text (`y = mx + b`) Specify y and x, for instance `[calc] = m[col] + b` where `col=abs600 calc=your-compound`
 
-    - [candidate-ranking](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000118) -- Statistical approach for ranking outcomes to determine candidates
+     - [normalization-transformation](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0200169) -- Define methods used to normalize data prior to standardization
+        - Free text column name specifying the operation used for normalization (`BCA / OD`)
+
+    - [standardized-score](https://www.ebi.ac.uk/ols/ontologies/so/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSO_0001685) -- Statistical approach for standardizing scores for ranking candidates
        - [z-score](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000104)
          -- Score after statistical normalization based on mean and standard deviations.
        - [mad-score](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0002127)
@@ -70,6 +72,7 @@ activity measurements going into the selection.
     - `yes`
     - `no`
     - `maybe` -- Not enough confidence to decide whether to move forward.
+    - `invalid` -- Experimental error
 
   - `advance` -- Top strains that move on to additional analyses or delivery. A
     boolean true/false value
@@ -104,27 +107,23 @@ pandas in Jupyter, Excel or R analyses:
 ## Example
 
 Prepare a data table with `response` calculated values, `active` and `advance`
-linked to original samples in the experiment:
+linked to original samples in the experiment. This example has a score used for
+selection and processed column of interest to include:
 
-| strain | root sample | myspecial Z-Score | raw activity | active | advance |
-| ---    | ---         | ---               | ---          | ---    | ---     |
-| 123    | 15          | 0.8               | 5.6          | yes    | true    |
-| 124    | 28          | 0.0               | 0.2          | no     | false   |
+| strain | root sample | myscore | myprocessed | active | advance |
+| ---    | ---         | ---     | ---         | ---    | ---     |
+| 123    | 15          | 0.8     | 5.6         | yes    | true    |
+| 124    | 28          | 0.0     | 0.2         | no     | false   |
 
 Prepare a data table mapping `response` to statistical methods used in
-`data-transformation`:
+`data-transformation` and `selection-criteria`:
 
-| response          | normalization-control | normalization-method | background-correction | candidate-ranking |
-| ---               | ---                   | ---                  | ---                   | ---               |
-| myspecial Z-score | positive              | mean                 | standard-curve        | z-score           |
-| raw activity      |                       |                      | raw                   |
+| response    | background-correction | standard-curve            | normalization-transformation | standardized-score | replicate-analysis | comparison | threshold |
+| ---         | ---                   | ---                       | ---                          | ---                | ---                | ---        | ---       |
+| myscore     | negative              | [compound] = m[OD520] + b | [compound] / [OD600]         | z-score            | median             | >          | 0.7       |
+| myprocessed | negative              |                           | per-plate-mean               |                    |                    |            |           |
 
-Define `selection-criteria`:
-```
-myspecial Z-Score > 0.7
-raw activity > 4.0
-```
-which gets transformed into:
+which gets transformed into an underlying representation:
 ```
 hts-assay-sample:
   lims-reference:
@@ -133,16 +132,16 @@ hts-assay-sample:
   response-endpoint:
     hit-selection: {advance: true, active: yes}
     selection-criteria:
-      [{response: myspecial Z-Score, comparison: > threshold: 0.7,
-        data-tranformation: {background-correction: z-score,
-                             normalization-control: positive,
-                             normalization-method: mean,
-                             candidate-ranking: z-score}},
-       {response: raw activity, comparison: > threshold: 4.0, 
-        data-transformation: {background-correction: raw}}]
+      [{response: myscore, replicate-analysis: median, comparison: >, threshold: 0.7,
+        data-tranformation: {background-correction: negative,
+                             standard-curve: '[compound] = m[OD520] + b',
+                             normalization-transformation: '[compound] / [OD600]',
+                             standardized-score: z-score}},
+       {response: myprocessed,
+        data-transformation: {background-correction: negative, normalization-transformation: per-plate-mean}}]
     response-measure:
-      [{response: myspecial Z-score, measurement: 0.8}
-       {response: raw activity, measurement: 5.6}]
+      [{response: myscore, measurement: 0.8}
+       {response: myprocessed, measurement: 5.6}]
 
 hts-assay-sample:
   lims-reference:
@@ -151,14 +150,14 @@ hts-assay-sample:
   response-endpoint:
     hit-selection: {advance: false, active: no}
     selection-criteria:
-      [{response: myspecial Z-Score, comparison: > threshold: 0.7,
-        data-tranformation: {background-correction: z-score,
-                             normalization-control: positive,
-                             normalization-method: mean,
-                             candidate-ranking: z-score}},
-       {response: raw activity, comparison: > threshold: 4.0,
-        data-transformation: {background-correction: raw}}]
+      [{response: myscore, replicate-analysis: median, comparison: >, threshold: 0.7,
+        data-tranformation: {background-correction: negative,
+                             standard-curve: '[compound] = m[OD520] + b',
+                             normalization-transformation: '[compound] / [OD600]',
+                             standardized-score: z-score}},
+       {response: myprocessed,
+        data-transformation: {background-correction: negative, normalization-transformation: per-plate-mean}}]
     response-measure:
-      [{response: myspecial Z-score, measurement: 0.0}
-       {response: raw activity, measurement: 0.1}]
+      [{response: myscore, measurement: 0.0}
+       {response: myprocessed, measurement: 0.1}]
 ```
