@@ -1,4 +1,4 @@
-# Constrained representation of control samples with ontologies
+# Identifying assay control samples
 
 At [Ginkgo](https://www.ginkgobioworks.com/), we're working on
 representing and tracking high level information about experimental design and
