@@ -13,8 +13,16 @@ one or more [selection-marker](https://www.ebi.ac.uk/ols/ontologies/bao/terms?ir
 specifications that depend on the strategies used:
 
 - [antibiotic-resistance](https://www.ebi.ac.uk/ols/ontologies/bao/terms?iri=http%3A%2F%2Fwww.bioassayontology.org%2Fbao%23BAO_0000099) -- Antibiotic resistance markers.
+  - [ampicillin apramcyin blasticidin carbenicillin chloramphenicol erythromycin gentamicin
+     hygromycin kanamycin nalidixic-acid neomycin nitrofurantoin nourseothricin puromycin rifampicin
+     spectinomycin streptomycin tetracycline thiostrepton trimethoprim zeocin]
 - [prototrophy](https://www.ebi.ac.uk/ols/ontologies/fypo/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FFYPO_0000128) -- Selection based on inability to make a particular compound. The desired transformation backbone supplements an [auxotroph](https://en.wikipedia.org/wiki/Auxotrophy) unable to make the compound.
+  - [histidine leucine tryptophan uracil]
+- compound-sensitivity -- Sensitivity to a specific compound, typically for negative
+  selection. For instance, [presence of amdS](https://www.sciencedirect.com/science/article/pii/S1087184519301069)
+  and sensitivity to [fluoroacetamide](https://en.wikipedia.org/wiki/Fluoroacetamide).
 - nuclease -- Provide selection with removal of destructive nuclease, [like X-cutter](https://patents.google.com/patent/WO2017201311A2/en)
+   - x-cutter
 
 ## Localization
 
