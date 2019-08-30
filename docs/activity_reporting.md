@@ -19,17 +19,18 @@ namespace:
 - Data transformation -- Transform the raw data by background correction,
   application of a standard curve, normalization, and calculating a standardized
   score for each sample. This process produces one or more response values for
-  each sample which is then used for determine experimental outcomes (calling
-  hits, advancing molecules/samples/strains to the next round.
+  each sample which is then used for determine experimental outcomes: calling
+  hits and advancing molecules/samples/strains to the next round.
 - Hit selection -- Indicate whether a sample is active, and whether it will be
   advanced to the next round in the project.
 - Logic for hit selection  -- Define the logic used to make the hit classifications.
-- Activity measurements -- The processed measurement values for each sample.
+- Activity measurements -- The processed measurement values for each sample that
+  contribute to the hit selection logic.
 
-Data transformation produces a `response` measure, a column of values in the
-output analysis data frame. The label for this `response`, the column name in
-the output data frame, is used to specify the data tranformation steps, included
-in hit selection logic and associated with the output activity measurement.
+Data transformation produces a `response` measure, corresponding to a column name
+of values in the output analysis data frame.  Data transformation steps, hit
+selection logic and calculated activity measurements refer to this `response`
+label.
 
 ## Data transformation
 
@@ -88,7 +89,7 @@ in hit selection logic and associated with the output activity measurement.
     client delivery. Can be either the top hits from the screen selected
     automatically by applying a logic function to the responses, or manually
     curated strains that are of interest for any number of reasons.
-    - yes, no
+    - [`yes`, `no`]
 
 ## Logic for hit selection
 
@@ -99,10 +100,9 @@ in hit selection logic and associated with the output activity measurement.
     `data-transformation` and `response-measure`.
   A label for the normalized response measurement used in selections.
   - `hit-selection` -- Type of hit selection
-     - active
-     - advance
+     - [`active`, `advance`]
   - `hit-selection-value` -- The hit selection decision
-     - yes, no, maybe, invalid
+     - [`yes`, `no`, `maybe`, `invalid`]
   - `formula` -- Free text describing the relationship between the `response` and the `hit-selection` decision:
      - Example: `myscore > 4.0 or container-id='c12345'`
 
@@ -128,15 +128,16 @@ Jupyter, Excel or R analyses:
   the `hit-response` and `response-measure` for each aggregated sample and `reponse` column
   in the data frame.
 - Prepare a data table mapping `response` columns to statistical methods
-  and formula used in defining `selection-criterion`
+  and formula used in defining `selection-criterion`.
 - Prepare a data table mapping `response` columns to the statistical methods
-  used in `data-transformation` and `selection-criterion`
+  used in `data-transformation`.
 
 ## Example
 
 Prepare a data table with transformed `response` data, `active` and `advance`
-linked to original samples in the experiment. This table is your final processed
-data frame, with additional columns to support the hit classification:
+linked to the original aggregated samples in the experiment. This table is your
+final processed data frame, with additional columns to support the hit
+classification:
 
 | other columns | root sample | myscore | myprocessed | active | advance |
 | ---           | ---         | ---     | ---         | ---    | ---     |
