@@ -37,7 +37,7 @@ label.
 - [data-transformation](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0200166) -- Perform mathematical transformations on the raw data to obtain one or more `response` values used to determine the experimental outcomes.
 
   - `response` -- A label for the normalized response measurement, used for
-    `selection-criteria` and `response-measure`.
+    `selection-criterion` and `response-measure`.
 
   - [background-correction](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0000666) -- Remove irrelevant contributions from the measured signal, e.g. those due to instrument noise or sample preparation, based on [specified controls](https://github.com/ginkgobioworks/ontology-clean/blob/master/docs/representing_controls.md#approaches-for-modeling-controls-and-requests-for-discussion):
      - negative
@@ -65,7 +65,7 @@ label.
        -- Signal normalized to positive and negative controls.
      - [fold-change](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000169)
        -- A relative change in activity based on experimental controls.
-     - [strictly standardized mean difference](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000135)
+     - [strictly-standardized-mean-difference](https://www.ebi.ac.uk/ols/ontologies/stato/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FSTATO_0000135)
        -- SSMD; standardized mean based on difference between multiple groups.
 
   - [replicate-analysis](https://www.ebi.ac.uk/ols/ontologies/obi/terms?iri=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FOBI_0200057) -- Statistical method applied to the `response` values for grouping replicates. Outcomes are determined on the group of replicates.
@@ -99,7 +99,7 @@ label.
   - `response` -- A label for the normalized response measurement, matching
     `data-transformation` and `response-measure`.
   A label for the normalized response measurement used in selections.
-  - `hit-selection` -- Type of hit selection
+  - `hit-selection-type` -- Type of hit selection
      - [`active`, `advance`]
   - `hit-selection-value` -- The hit selection decision
      - [`yes`, `no`, `maybe`, `invalid`]
