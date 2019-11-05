@@ -24,9 +24,7 @@ namespace:
   - pellet
   - induced
   - replicate -- A duplicate of an identically labeled measurement
-  - redo -- Distinguish a new measurement replacing a previous with the same
-    label
-  - root -- Define as the root sample for aggregating analysis results
+  - redo -- Distinguish a new measurement replacing a previous with the same label
 
 - `label-substep` -- A second level relationship connected with the label,
   defining a sub-step
