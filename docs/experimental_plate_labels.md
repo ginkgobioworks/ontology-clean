@@ -41,3 +41,19 @@ The unique name for an `intent-label` is the combination of the 3 fields.
 name if not set. For example, measurements on a plate, or parent plate, with `label-intent`: 
 `label: production, label-substep: aliquot, label-index: 2` would be uniquely named
 `production aliquot 2` during downstream analysis steps.
+
+## Measurement aggregation on pivot samples
+
+Experimental workflows include multiple measurements on linked samples.  To
+generate a data frame for analysis and hit selection, these measurements need to
+aggregate by a common pivot sample. During aggregation we use labels in two
+ways:
+
+- Specifying the pivot sample to aggregate on. Experiments are non-standard,
+  so we can't automatically assume this without context.
+- Differentiating multiple identical measurements: like OD600 at multiple steps.
+
+The [example reaction diagram](https://drive.google.com/file/d/1NfqBB3WfrZZNIMgXmKtSmQlXAiLE93nl/view?usp=sharing)
+shows an experiment with labeled reactions for collecting and differentiating measurements.
+
+<img src="images/experiment-intent-tree.png" width="500"/>

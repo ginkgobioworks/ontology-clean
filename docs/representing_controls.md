@@ -77,7 +77,7 @@ control definition has 2 different components:
   into a couple of categories:
 
   - Expected detection amounts relative to other controls: [`very-high`, `high`,
-    `medium-high`, `medium`, `medium-low`, `low`, `very-low`, `none`] 
+    `medium-high`, `medium`, `medium-low`, `low`, `very-low`]
   - Defining interpretation of the control: [`growth`, `expression`, `background`, `activity`, `inhibition`]
 
 Our goal is to provide constrained lists of choices covering the wide variety
